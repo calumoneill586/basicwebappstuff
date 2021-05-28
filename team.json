@@ -1,0 +1,95 @@
+{
+  "transactions": [
+    {
+      "id": 3,
+      "userId": 2,
+      "description": "tx 1 for Alice",
+      "date": "2021-01-25"
+    },
+    {
+      "id": 4,
+      "userId": 3,
+      "description": "tx 1 for Carol",
+      "date": "2021-03-25"
+    },
+    {
+      "id": 5,
+      "userId": "4",
+      "description": "tx 1 for Calum",
+      "date": "2020-12-01"
+    },
+    {
+      "id": 6,
+      "userId": 5,
+      "description": "tx 1 for Fred",
+      "date": "2021-01-28"
+    },
+    {
+      "id": 7,
+      "userId": 4,
+      "description": "tx 2 for Calum",
+      "date": "2021-01-27"
+    },
+    {
+      "id": 8,
+      "userId": 5,
+      "description": "tx 2 for Fred",
+      "date": "2021-01-28"
+    }
+  ],
+  "team": [
+    {
+      "name": "Mick",
+      "email": "mick@gmail",
+      "active": true,
+      "id": 1
+    },
+    {
+      "name": "Alice",
+      "email": "alice@gmail.com",
+      "DOB": "1989-06-04",
+      "active": false,
+      "id": 2
+    },
+    {
+      "name": "Carol",
+      "email": "carol@gmail.com",
+      "DOB": "1970-01-23",
+      "active": true,
+      "id": 3
+    },
+    {
+      "name": "Calum",
+      "email": "calum@gmail.com",
+      "DOB": "1975-04-07",
+      "active": true,
+      "id": 4
+    },
+    {
+      "name": "Fred",
+      "email": "fred@gmail.com",
+      "DOB": "1990-11-24",
+      "active": true,
+      "id": 5
+    },
+    {
+      "name": "John",
+      "email": "john@gmail.com",
+      "DOB": "1997-01-23",
+      "active": false,
+      "id": 6
+    },
+    {
+      "name": "Harry",
+      "email": "harry@gmail.com",
+      "active": true,
+      "id": 7
+    },
+    {
+      "name": "Bob",
+      "email": "bob@gmail.com",
+      "active": true,
+      "id": 8
+    }
+  ]
+}

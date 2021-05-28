@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>JQuery Exercise</h1>
+
+    <select id="dropdown">
+    </select>
+
+
+    <style>
+        #tblMemberDetail tbody tr:nth-child(2) td:nth-child(2) {
+            background-color : lightgreen;
+        }
+    </style>
+
+    
+    <table id="tblMemberDetail">      
+        <tbody>
+            <tr>
+                <td>Id</td><td id="tdId">1</td>
+            </tr>
+            <tr>
+                <td>Name</td><td id="tdName">2</td>
+            </tr>
+            <tr>
+                <td>Email</td><td id="tdEmail">3</td>
+            </tr>
+            <tr>
+                <td>Active</td><td id="tdActive">4</td>
+            </tr>
+        </tbody>
+    </table>
+
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+       
+
+        function showUser(user) {
+            $('#tdId').html(user.id);
+            $('#tdName').html(user.name);
+            $('#tdEmail').html(user.email);
+            $('#tdActive').html(user.active? "Active" : "Inactive");
+
+        }
+        var team = [
+            {"id":1, name:"Alice", email:"alice@gmail.com", active:true},
+            {"id":2, name:"Bob", email:"bob@gmail.com", active:false},
+            {"id":3, name:"Carol", email:"carol@gmail.com", active:true},
+            {"id":4, name:"Dan", email:"dan@gmail.com", active:true},
+            {"id":5, name:"Eve", email:"eve@gmail.com", active:false},
+            {"id":6, name:"Carol", email:"caroll@gmail.com", active:true},
+        ];
+
+        // show the first user
+        showUser(team[0]);
+
+        // populate the drop down
+        for (var i=0; i<team.length; i++) {
+
+            $('#dropdown').append(`<option value="${team[i].id}">${team[i].name}</option>`);
+        }
+
+                     
+        $('#dropdown').on("change", function() {
+            
+
+            var selectedId = $('#dropdown').val();
+            
+            
+            // find the team member from the array
+            for (var i=0; i<team.length; i++) {
+
+                if (team[i].id == selectedId) {
+                    // found the item in the array
+                    showUser(team[i]);
+                
+                }
+
+            }
+
+
+            
+        });
+
+    </script>
+</body>
+</html>

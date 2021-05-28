@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Team</h1>
+
+    <table id="tblTeam">      
+        <thead>
+            <tr>
+                <th>ID</th>      
+                <th>Name</th>          
+                <th>Email</th>                      
+                <th>Birthday</th>
+                <th>Active</th>
+                <th>Controls</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+    <hr>
+
+    <div id="dlgUser">
+        Name: <input id="txtName"><br>
+        Email: <input id="txtEmail"><br>
+        DOB: <input type = "date" id="dtpDob"><br>
+        Active: <input type= "checkbox" id="chkActive"><br>
+
+        <button id="btnSave">Add</button>
+        <button id="btnCancel">Cancel</button>
+    </div>
+
+    
+
+    <hr>
+
+    <!-- new -->
+    <h1>Transactions</h1>
+
+    <table id="tblTransactions">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>UserId</th>
+                <th>Description</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+    <div id="dlgTransaction">
+        UserId: <input id="txtUserId"><br>
+        Description: <input id="txtDesc"><br>
+        Date: <input id="txtDate"><br>
+
+        <button id="txdlg_btnSave">Add</button>
+        <button id="txdlg_btnCancel">Cancel</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <script>
+
+        function addUserToTable(user) {
+
+            $('#tblTeam tbody').append(`<tr id="tr_${user.id}" class= "tr_users">
+                            <td>${user.id}</td>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${user.DOB}</td>
+                            <td>
+                                <input type="checkbox" id="chkActive_${user.id}" ${user.active ? "CHECKED" : ""} DISABLED>
+                                </td>  
+                            <td>
+                                <button id="del_${user.id}" class="btn_delete">X</button>
+                                <button id="edit_${user.id}" class="btn_edit">Edit</button>
+                                <button id="save_${user.id}" class="btn_save" DISABLED>Save</button>
+                                <button id="cancel_${user.id}" class="btn_cancel" DISABLED>Cancel</button>           
+                            </td>    
+                        </tr>`);
+        }
+
+        function addTransactionsToTable(transact) {
+
+            $('#tblTransactions tbody').append(`<tr id="trTransaction_${transact.id}" class="tr_transactions">
+                            <td>${transact.id}</td>
+                            <td>${transact.userId}</td>
+                            <td>${transact.description}</td>
+                            <td>${transact.date}</td>
+                            <td>
+                                <button id="txdel_${transact.id}" class="btn_txdelete">X</button>
+                                <button id="txedit_${transact.id}" class="btn_txedit">Edit</button>
+                                <button id="txsave_${transact.id}" class="btn_txsave" DISABLED>Save</button>
+                                <button id="txcancel_${transact.id}" class="btn_txcancel" DISABLED>Cancel</button>
+                            </td>
+                        </tr>`);
+        }
+
+        function getIdFromEvent(evt) {
+            var pieces = evt.currentTarget.id.split("_");
+            var id = pieces[1];
+            return id;
+        }
+
+        var baseURL = "http://localhost:3000/";
+        var url = `${baseURL}team`;
+        var transactionUrl = `${baseURL}transactions`;
+
+        $.getJSON(url, function(team) {
+            for (var i=0; i<team.length; i++) {
+                addUserToTable(team[i]);
+            }
+        });
+
+        $.getJSON(transactionUrl, function(transactions) {
+            for (var i=0; i<transactions.length; i++) {
+                addTransactionsToTable(transactions[i]);
+            }
+        }); 
+        
+        // add click event handler to .btn_delete even for 
+        // objects that don't exist yet
+
+        // users
+        $(document).on("click", '.btn_delete', function(evt) { 
+            var id = getIdFromEvent(evt);
+            /* var pieces = evt.currentTarget.id.split("_");
+            var id = pieces[1]; */
+
+            if (confirm(`Delete user ${id}.Are you sure?`)) {
+                $.ajax({
+                    method: "DELETE",
+                    url: `${url}/${id}`,
+                    success: function() {                      
+                        $(`#tr_${id}`).remove();
+                    },
+                    error: function(error) {
+                        alert("error");
+                    }
+                });
+            }
+        });
+
+        // transactions
+        $(document).on("click", '.btn_txdelete', function(evt) {
+            var id = getIdFromEvent(evt);
+            /* var pieces = evt.currentTarget.id.split("_");
+            var id = pieces[1]; */
+
+            if (confirm(`Delete user ${id}.Are you sure?`)) {
+                $.ajax({
+                    method: "DELETE",
+                    url: `${transactionUrl}/${id}`,
+                    success: function() {                      
+                        $(`#tblTransactions #tr_${id}`).remove();
+                    },
+                    error: function(error) {
+                        alert("error");
+                    }
+                });
+            }
+
+        });
+        
+        // users
+        $(document).on("click", ".btn_edit", function(evt) {
+            var id = getIdFromEvent(evt);
+
+            var name = $(`#tr_${id} td:nth-child(2)`).html();
+            $(`#tr_${id} td:nth-child(2)`).html(`<input id="txtName_${id}" value="${name}" data-original-value="${name}">`);
+
+            var email = $(`#tr_${id} td:nth-child(3)`).html();
+            $(`#tr_${id} td:nth-child(3)`).html(`<input id="txtEmail_${id}" value="${email}" data-original-value="${email}">`);
+        
+            var DOB = $(`#tr_${id} td:nth-child(4)`).html();
+            $(`#tr_${id} td:nth-child(4)`).html(`<input id="dtpDob_${id}" type="date" value="${DOB}" data-original-value="${DOB}">`);
+
+            var checked = $(`#chkActive_${id}`).prop("checked");
+
+            $(`#chkActive_${id}`).attr("data-original-value", checked);
+            $(`#chkActive_${id}`).attr("DISABLED", false);
+    
+            $(`#save_${id}`).attr("DISABLED", false);
+            $(`#edit_${id}`).attr("DISABLED", true);   
+            $(`#cancel_${id}`).attr("DISABLED", false);
+        });
+
+        // transactions
+        $(document).on("click", ".btn_txedit", function(evt) {
+            var id =getIdFromEvent(evt);
+
+            var userId = $(`#tblTransactions #trTransaction_${id} td:nth-child(2)`).html();
+            $(`#tblTransactions #trTransaction_${id} td:nth-child(2)`).html(`<input id="txtUserId_${id}" value="${userId}" data-original-value="${userId}">`);
+
+            var description = $(`#tblTransactions #trTransaction_${id} td:nth-child(3)`).html();
+            $(`#tblTransactions #trTransaction_${id} td:nth-child(3)`).html(`<input id="txtDesc_${id}" value="${description}" data-original-value="${description}">`);
+
+            var date = $(`#tblTransactions #trTransaction_${id} td:nth-child(4)`).html();
+            $(`#tblTransactions #trTransaction_${id} td:nth-child(4)`).html(`<input type="date" id="dtDate_${id}" value="${date}" data-original-value="${date}">`);
+
+            $(`#txsave_${id}`).attr("DISABLED", false);
+            $(`#txedit_${id}`).attr("DISABLED", true);   
+            $(`#txcancel_${id}`).attr("DISABLED", false);
+
+            
+
+        });
+
+        // users
+        $(document).on("click", ".btn_cancel", function(evt) {
+            var id = getIdFromEvent(evt);
+
+            // read the original values from the controls
+            var originalName = $(`#txtName_${id}`).attr("data-original-value");
+            var originalEmail = $(`#txtEmail_${id}`).attr("data-original-value");
+            var originalActive = $(`#chkActive_${id}`).attr("data-original-value") == "true";
+
+            
+            $(`#tr_${id} td:nth-child(2)`).html(originalName);
+            $(`#tr_${id} td:nth-child(3)`).html(originalEmail);
+            $(`#chkActive_${id}`).prop("checked", originalActive);
+
+            $(`#chkActive_${id}`).attr("DISABLED", true);
+            $(`#save_${id}`).attr("DISABLED", true);
+            $(`#edit_${id}`).attr("DISABLED", false);
+            $(`#cancel_${id}`).attr("DISABLED", true);
+        });
+
+        // transactions
+        $(document).on("click", ".btn_txcancel", function(evt) {
+            var id = getIdFromEvent(evt);
+
+            // read the original values from the controls
+            var originalUserId = $(`#tblTransactions #txtUserId_${id}`).attr("data-original-value");
+            var originalDesc = $(`#tblTransactions #txtDesc_${id}`).attr("data-original-value");
+            var originalDate = $(`#tblTransactions #dtDate_${id}`).attr("data-original-value");
+
+            $(`#tblTransactions #trTransaction_${id} td:nth-child(2)`).html(originalUserId);
+            $(`#tblTransactions #trTransaction_${id} td:nth-child(3)`).html(originalDesc);
+            $(`#tblTransactions #trTransaction_${id} td:nth-child(4)`).html(originalDate);
+
+            $(`#txsave_${id}`).attr("DISABLED", true);
+            $(`#txedit_${id}`).attr("DISABLED", false);
+            $(`#txcancel_${id}`).attr("DISABLED", true);
+
+        });
+
+
+        $(document).on("click", ".btn_txsave", function(evt) {
+            var id = getIdFromEvent(evt);
+
+            // read the original values from the controls
+            var updatedUserId = $(`#tblTransactions #txtUserId_${id}`).val();
+            var updatedDesc = $(`#tblTransactions #txtDesc_${id}`).val();
+            var updatedDate = $(`#tblTransactions #dtDate_${id}`).val();
+
+            var updatedTransaction = {
+                id: id, 
+                userId: updatedUserId, 
+                description: updatedDesc, 
+                date: updatedDate
+            }
+
+            $.ajax({
+                method: "PUT",
+                url: `${transactionUrl}/${id}`,
+                contentType: "application/json",
+                data: JSON.stringify(updatedTransaction),
+                success: function(transaction) {
+                    // remove the text controls and replace them with just the text
+                    $(`#tblTransactions #trTransaction_${id} td:nth-child(2)`).html(transaction.userId);
+                    $(`#tblTransactions #trTransaction_${id} td:nth-child(3)`).html(transaction.description);
+                    $(`#tblTransactions #trTransaction_${id} td:nth-child(4)`).html(transaction.date);
+
+                    $(`#txsave_${id}`).attr("DISABLED", true);
+                    $(`#txedit_${id}`).attr("DISABLED", false);
+                    $(`#txcancel_${id}`).attr("DISABLED", true);
+                },
+                error: function(error) {
+                    alert("error");
+                }
+            })
+
+
+
+
+        });
+
+
+        // users
+        $(document).on("click", ".btn_save", function(evt) {
+            var id = getIdFromEvent(evt);
+
+            // read the values from the controls
+            var updatedName = $(`#txtName_${id}`).val();
+            var updatedEmail = $(`#txtEmail_${id}`).val();
+            var updatedDOB = $(`#dtpDob_${id}`).val()
+            var updatedActive = $(`#chkActive_${id}`).prop("checked");
+
+            var updatedUser = {
+                name: updatedName,
+                email: updatedEmail,
+                DOB: updatedDOB,
+                active: updatedActive
+            }
+
+            console.log(updatedUser);
+            
+            // write the update using an ajax call
+            $.ajax({
+                method: "PUT",
+                url: `${url}/${id}`,
+                contentType: "application/json",
+                data: JSON.stringify(updatedUser),
+                success: function(user) {
+                    // remove the text controls and replace them with just the text
+                    $(`#tr_${id} td:nth-child(2)`).html(user.name);
+                    $(`#tr_${id} td:nth-child(3)`).html(user.email);
+                    $(`#tr_${id} td:nth-child(4)`).html(user.DOB);
+
+                    $(`#chkActive_${id}`).attr("DISABLED", true);
+                    $(`#save_${id}`).attr("DISABLED", true);
+                    $(`#edit_${id}`).attr("DISABLED", false);
+                    $(`#cancel_${id}`).attr("DISABLED", true);              
+                },
+                error: function(error) {
+                    alert("error");
+                }
+            })
+        });
+
+        // transactions
+        $(document).on('click', '.tr_users', function(evt) {
+            var userId = getIdFromEvent(evt);
+            
+            // clear the existing transactions
+            $('#tblTransactions tbody').empty();
+            // get the transactions for userId
+            $.getJSON(`${transactionUrl}?userId=${userId}`, function(transactions) {
+
+                for (var i=0; i<transactions.length; i++) {
+                    addTransactionsToTable(transactions[i]);
+                }
+            });
+            
+        });
+
+        // users
+        $('#btnSave').on("click", function() {
+            var name = $('#txtName').val();
+            var email = $('#txtEmail').val();
+            var active = $('#chkActive').prop('checked');
+
+            var newUser = {
+                name: name,
+                email: email,
+                active: active
+            }
+
+            console.log(newUser);
+            
+            // write new user to REST using POST request Representational State Transfer
+            $.ajax({
+                method: "POST",
+                url: url,
+                contentType: "application/json",
+                data: JSON.stringify(newUser),
+
+                success: function(user) {
+                    addUserToTable(user);
+                    
+                },
+
+                error: function(error) {
+                    alert("error");
+                }
+            });               
+        });     
+        
+        
+        </script>
+</body>
+</html>
